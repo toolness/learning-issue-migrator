@@ -1,0 +1,16 @@
+{
+  "name": "learning-issue-migrator",
+  "version": "0.0.1",
+  "description": "Migrate learning team issues from mozilla/teach.webmaker.org.",
+  "main": "migrate.js",
+  "dependencies": {
+    "parse-link-header": "^0.2.0",
+    "request": "^2.55.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,7 +1,11 @@
+var fs = require('fs');
+var path = require('path');
 var through = require('through');
+var zpad = require('zpad');
 
 var PagedEntityStream = require('./paged-entity-stream');
 
+var CACHE_DIR = path.join(__dirname, 'cache');
 var GITHUB_USERNAME = process.env.GITHUB_USERNAME;
 var GITHUB_PASSWORD = process.env.GITHUB_PASSWORD;
 
@@ -14,9 +18,11 @@ var issueStream = new PagedEntityStream({
   url: 'https://api.github.com/repos/' + GITHUB_REPO + '/issues',
   user: GITHUB_USERNAME,
   pass: GITHUB_PASSWORD
-});
-
-var issueWithCommentsStream = issueStream.pipe(through(function(issue) {
+}).pipe(through(function ignoreIssueIfAlreadyCached(issue) {
+  if (!fs.existsSync(issueFilename(issue))) {
+    this.queue(issue);
+  }
+})).pipe(through(function addCommentsToIssue(issue) {
   var self = this;
 
   var allComments = [];
@@ -37,8 +43,16 @@ var issueWithCommentsStream = issueStream.pipe(through(function(issue) {
     self.resume();
   });
   self.pause();
-}));
-
-issueWithCommentsStream.on('data', function(issue) {
-  console.log(issue);
+})).on('data', function cacheIssue(issue) {
+  console.log('caching issue ' + issue.number);
+  fs.writeFileSync(issueFilename(issue), JSON.stringify(issue, null, 2));
 });
+
+function issueFilename(issue) {
+  var ZPAD_AMOUNT = 3;
+  return path.join(CACHE_DIR, zpad(issue.number, ZPAD_AMOUNT) + '.json');
+}
+
+if (!fs.existsSync(CACHE_DIR)) {
+  fs.mkdirSync(CACHE_DIR);
+}

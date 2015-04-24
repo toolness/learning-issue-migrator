@@ -1,6 +1,5 @@
 var through = require('through');
 
-var GithubIssueStream = require('./github-issue-stream');
 var PagedEntityStream = require('./paged-entity-stream');
 
 var GITHUB_USERNAME = process.env.GITHUB_USERNAME;
@@ -10,9 +9,9 @@ var GITHUB_REPO = 'mozilla/teach.webmaker.org';
 var USER_AGENT = 'learning-issue-migrator on behalf of ' +
                  'GitHub user ' + GITHUB_USERNAME;
 
-var issueStream = new GithubIssueStream({
+var issueStream = new PagedEntityStream({
   userAgent: USER_AGENT,
-  repo: GITHUB_REPO,
+  url: 'https://api.github.com/repos/' + GITHUB_REPO + '/issues',
   user: GITHUB_USERNAME,
   pass: GITHUB_PASSWORD
 });

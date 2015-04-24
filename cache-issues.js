@@ -27,6 +27,13 @@ var issueStream = new PagedEntityStream({
 })).pipe(through(function addCommentsToIssue(issue) {
   var self = this;
   var allComments = [];
+
+  if (issue.comments === 0) {
+    issue.comments = [];
+    self.emit('data', issue);
+    return;
+  }
+
   var comments = new PagedEntityStream({
     userAgent: USER_AGENT,
     url: 'https://api.github.com/repos/' + GITHUB_REPO +

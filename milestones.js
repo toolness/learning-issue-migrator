@@ -37,39 +37,53 @@ function migrateMilestone(milestone, dest, cb) {
   });
 }
 
+function createMilestoneMap(src, dest, cb) {
+  console.log("Fetching milestones for " + chalk.cyan(src) + ".");
+  fetchMilestones(src, function(err, srcMilestones) {
+    if (err) return cb(err);
+
+    console.log("Fetching milestones for " + chalk.cyan(dest) + ".");
+    fetchMilestones(dest, function(err, destMilestones) {
+      if (err) return cb(err);
+
+      return cb(null, {
+        src: srcMilestones,
+        dest: destMilestones,
+        milestoneFor: function(title) {
+          return _.findWhere(destMilestones, {title: title});
+        }
+      });
+    });
+  });
+}
+
 function main() {
   var src = cacheIssues.GITHUB_REPO;
   var dest = migrate.GITHUB_DEST_REPO;
 
   migrate.verifyConfig();
 
-  console.log("Fetching milestones for " + chalk.cyan(src) + ".");
-  fetchMilestones(src, function(err, srcMilestones) {
+  createMilestoneMap(src, dest, function(err, map) {
     if (err) throw err;
 
-    console.log("Fetching milestones for " + chalk.cyan(dest) + ".");
-    fetchMilestones(dest, function(err, destMilestones) {
+    var toMigrate = [];
+
+    map.src.forEach(function(srcMilestone) {
+      var destMilestone = map.milestoneFor(srcMilestone.title);
+
+      if (!destMilestone) {
+        toMigrate.push(migrateMilestone.bind(null, srcMilestone, dest));
+      }
+    });
+
+    async.series(toMigrate, function(err) {
       if (err) throw err;
-
-      var toMigrate = [];
-
-      srcMilestones.forEach(function(srcMilestone) {
-        var destMilestone = _.findWhere(destMilestones, {
-          title: srcMilestone.title
-        });
-
-        if (!destMilestone) {
-          toMigrate.push(migrateMilestone.bind(null, srcMilestone, dest));
-        }
-      });
-
-      async.series(toMigrate, function(err) {
-        if (err) throw err;
-        console.log("Done migrating milestones.");
-      });
+      console.log("Done migrating milestones.");
     });
   });
 }
+
+exports.createMilestoneMap = createMilestoneMap;
 
 if (!module.parent) {
   main();

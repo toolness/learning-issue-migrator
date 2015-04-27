@@ -1,5 +1,7 @@
 var fs = require('fs');
 var path = require('path');
+var querystring = require('querystring');
+var _ = require('underscore');
 var through = require('through');
 var zpad = require('zpad');
 
@@ -27,10 +29,27 @@ function getAllCachedIssues() {
     });
 }
 
-function cacheIssues() {
+function getLatestUpdate() {
+  var latestUpdate = _.max(getAllCachedIssues()
+    .map(function(issue) {
+      return Date.parse(issue.updated_at);
+    }));
+
+  return latestUpdate > 0 ? latestUpdate : 0;
+}
+
+function cacheIssues(since) {
+  var qs = {};
+
+  if (since) {
+    qs.since = new Date(since).toISOString();
+    console.log("Fetching only issues updated since " + qs.since + ".");
+  }
+
   return new PagedEntityStream({
     userAgent: USER_AGENT,
-    url: 'https://api.github.com/repos/' + GITHUB_REPO + '/issues',
+    url: 'https://api.github.com/repos/' + GITHUB_REPO + '/issues?' +
+         querystring.stringify(qs),
     user: GITHUB_USERNAME,
     pass: GITHUB_PASSWORD
   }).pipe(through(function ignoreIssueIfAlreadyCached(issue) {
@@ -93,5 +112,10 @@ if (!fs.existsSync(CACHE_DIR)) {
 }
 
 if (!module.parent) {
-  cacheIssues();
+  if (['-h', '--help'].indexOf(process.argv[2]) != -1) {
+    console.log("usage: " + path.basename(process.argv[1]) +
+                " [last-update-date]");
+  } else {
+    cacheIssues(process.argv[2] || getLatestUpdate());
+  }
 }

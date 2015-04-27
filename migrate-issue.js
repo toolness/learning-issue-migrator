@@ -30,8 +30,11 @@ function createIssue(newIssue, dest, cb) {
     body: newIssue
   }, function(err, res, body) {
     if (err) return cb(err);
-    if (res.statusCode != 201)
+    if (res.statusCode != 201) {
+      console.log(chalk.red.bold("Failed to create issue: " +
+                                 JSON.stringify(body, null, 2)));
       return cb(new Error("got HTTP " + res.statusCode));
+    }
     cb(null, body);
   });
 }

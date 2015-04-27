@@ -32,10 +32,15 @@ function findLinkedIssues(issue) {
   return linkedIssues;
 }
 
-function isPlatformIssue(issue) {
-  var hasPlatformLabel = !!_.findWhere(issue.labels, {name: "platform"});
+function hasLabel(issue, label) {
+  return !!_.findWhere(issue.labels, {name: label});
+}
 
-  return hasPlatformLabel || 'pull_request' in issue;
+function isPlatformIssue(issue) {
+  return hasLabel(issue, 'platform') ||
+         hasLabel(issue, 'engineering') ||
+         hasLabel(issue, 'bug') ||
+         'pull_request' in issue;
 }
 
 function isNonPlatformIssue(issue) {

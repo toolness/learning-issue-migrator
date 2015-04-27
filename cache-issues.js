@@ -19,7 +19,18 @@ var issueStream = new PagedEntityStream({
   user: GITHUB_USERNAME,
   pass: GITHUB_PASSWORD
 }).pipe(through(function ignoreIssueIfAlreadyCached(issue) {
-  if (!fs.existsSync(issueFilename(issue))) {
+  var queue = true;
+  var filename = issueFilename(issue);
+  var cachedIssue;
+
+  if (fs.existsSync(filename)) {
+    cachedIssue = JSON.parse(fs.readFileSync(filename));
+    if (Date.parse(issue.updated_at) <= Date.parse(cachedIssue.updated_at)) {
+      queue = false;
+    }
+  }
+
+  if (queue) {
     this.queue(issue);
   } else {
     console.log('Skipping issue ' + issue.number + ' (already cached).');

@@ -114,7 +114,7 @@ if (!fs.existsSync(CACHE_DIR)) {
 if (!module.parent) {
   if (['-h', '--help'].indexOf(process.argv[2]) != -1) {
     console.log("usage: " + path.basename(process.argv[1]) +
-                " [last-update-date]");
+                " [last-update-date|0]");
   } else {
     cacheIssues(process.argv[2] || getLatestUpdate());
   }

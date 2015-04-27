@@ -39,7 +39,7 @@ function getLatestUpdate() {
 }
 
 function cacheIssues(since) {
-  var qs = {};
+  var qs = {'state': 'all'};
 
   if (since) {
     qs.since = new Date(since).toISOString();

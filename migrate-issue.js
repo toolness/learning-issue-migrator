@@ -39,6 +39,30 @@ function createIssue(newIssue, dest, cb) {
   });
 }
 
+function linkToMigration(src, srcIssue, destIssue, cb) {
+  var body = [
+    "## This issue has been moved to " + destIssue.html_url,
+    "Please don't comment on it here."
+  ].join('\n');
+  githubRequest({
+    method: 'POST',
+    url: 'https://api.github.com/repos/' + src + '/issues/' +
+         srcIssue.number + '/comments',
+    json: true,
+    body: {
+      body: body
+    }
+  }, function(err, res, body) {
+    if (err) return cb(err);
+    if (res.statusCode != 201) {
+      console.log(chalk.red.bold("Failed to create comment: " +
+                                 JSON.stringify(body, null, 2)));
+      return cb(new Error("got HTTP " + res.statusCode));
+    }
+    cb(null, body);
+  });
+}
+
 function main() {
   var rl = readline.createInterface({
     input: process.stdin,
@@ -66,15 +90,24 @@ function main() {
 
           console.log("Created " + chalkUtil.issueDesc(createdIssue) + ".");
 
-          if (issue.state === 'closed') {
-            editIssue(createdIssue.number, {
-              state: 'closed'
-            }, dest, function(err, closedIssue) {
+          editIssue(createdIssue.number, {
+            state: issue.state
+          }, dest, function(err, createdIssue) {
+            if (err) throw err;
+            console.log("Updated state for new " +
+                        chalkUtil.issueDesc(createdIssue) + ".");
+            linkToMigration(src, issue, createdIssue, function(err) {
               if (err) throw err;
-              console.log("Closed " + chalkUtil.issueDesc(closedIssue) +
-                          ".");
+              console.log("Linked to new issue from old issue.");
+              editIssue(issue.number, {
+                state: 'closed'
+              }, src, function(err, issue) {
+                if (err) throw err;
+                console.log("Closed old " +
+                            chalkUtil.issueDesc(issue) + ".");
+              });
             });
-          }
+          });
         });
       });
     });

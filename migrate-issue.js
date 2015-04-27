@@ -8,6 +8,20 @@ var cacheIssues = require('./cache-issues');
 var milestones = require('./milestones');
 var generateMigratedIssue = require('./generate-migrated-issue');
 
+function editIssue(number, changes, dest, cb) {
+  githubRequest({
+    method: 'PATCH',
+    url: 'https://api.github.com/repos/' + dest + '/issues/' + number,
+    json: true,
+    body: changes
+  }, function(err, res, body) {
+    if (err) return cb(err);
+    if (res.statusCode != 200)
+      return cb(new Error("got HTTP " + res.statusCode));
+    cb(null, body);
+  });
+}
+
 function createIssue(newIssue, dest, cb) {
   githubRequest({
     method: 'POST',
@@ -47,7 +61,17 @@ function main() {
         createIssue(newIssue, dest, function(err, createdIssue) {
           if (err) throw err;
 
-          console.log("Created " + chalkUtil.issueDesc(createdIssue));
+          console.log("Created " + chalkUtil.issueDesc(createdIssue) + ".");
+
+          if (issue.state === 'closed') {
+            editIssue(createdIssue.number, {
+              state: 'closed'
+            }, dest, function(err, closedIssue) {
+              if (err) throw err;
+              console.log("Closed " + chalkUtil.issueDesc(closedIssue) +
+                          ".");
+            });
+          }
         });
       });
     });

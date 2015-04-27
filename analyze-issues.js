@@ -4,7 +4,7 @@ var chalk = require('chalk');
 
 var cacheIssues = require('./cache-issues');
 
-var commands = {};
+var reports = {};
 
 function scanIssue(issue, regex) {
   var matches = [];
@@ -56,24 +56,24 @@ function issueDesc(issue) {
 }
 
 function help(exitcode) {
-  console.log("usage: " + path.basename(process.argv[1]) + ' [command]');
-  console.log("\ncommands:\n");
-  Object.keys(commands).forEach(function(name) {
-    console.log('  ' + name, '-', commands[name].help);
+  console.log("usage: " + path.basename(process.argv[1]) + ' [report]');
+  console.log("\nreports:\n");
+  Object.keys(reports).forEach(function(name) {
+    console.log('  ' + name, '-', reports[name].help);
   });
   process.exit(exitcode || 0);
 }
 
 function main() {
   var arg = process.argv[2];
-  var cmd = commands[arg];
+  var report = reports[arg];
 
   if (['-h', '--help'].indexOf(arg) != -1) return help();
-  if (!cmd) return help(1);
-  cmd.run();
+  if (!report) return help(1);
+  report.run();
 }
 
-commands['linked'] = {
+reports['linked'] = {
   help: 'show non-platform issues linking to other issues',
   run: function() {
     cacheIssues.getAllCachedIssues()
@@ -92,7 +92,7 @@ commands['linked'] = {
   }
 };
 
-commands['platform'] = {
+reports['platform'] = {
   help: 'show all platform issues',
   run: function() {
     cacheIssues.getAllCachedIssues()
@@ -103,7 +103,7 @@ commands['platform'] = {
   }
 };
 
-commands['non-platform'] = {
+reports['non-platform'] = {
   help: 'show all non-platform issues',
   run: function() {
     cacheIssues.getAllCachedIssues()

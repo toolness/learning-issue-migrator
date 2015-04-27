@@ -5,6 +5,8 @@ This is an attempt at implementing a solution for
 
 * `GITHUB_USERNAME` is your GitHub username.
 * `GITHUB_PASSWORD` is your GitHub password.
+* `GITHUB_DEST_REPO` is the destination repository to migrate issues
+  to, e.g. `mozilla/mozilla-learning`.
 
 ## Quick Start
 
@@ -17,6 +19,12 @@ Re-running `node cache-issues.js` will update the cache.
 
 Running `node analyze-issues.js` will provide help on various reports
 you can run on the cached issues.
+
+Running `node milestones.js` will duplicate the source repo's
+milestones in the destination repo.
+
+Running `node migrate-issue.js` will migrate an individual issue from
+the source repo to the destination repo.
 
 <!-- Links -->
 

@@ -1,8 +1,8 @@
 var Readable = require('stream').Readable;
 var util = require('util');
-
-var request = require('request');
 var parseLinkHeader = require('parse-link-header');
+
+var githubRequest = require('./github-request');
 
 function PagedEntityStream(options) {
   Readable.call(this, {
@@ -19,16 +19,8 @@ PagedEntityStream.prototype._fetchMoreEntities = function() {
   var self = this;
   var options = this.options;
 
-  request({
+  githubRequest({
     url: this._nextURL,
-    headers: {
-      'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': options.userAgent
-    },
-    auth: {
-      user: options.user,
-      pass: options.pass
-    }
   }, function(err, res, body) {
     if (err) {
       return self.emit('error', err);

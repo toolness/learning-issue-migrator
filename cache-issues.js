@@ -8,12 +8,7 @@ var zpad = require('zpad');
 var PagedEntityStream = require('./paged-entity-stream');
 
 var CACHE_DIR = path.join(__dirname, 'cache');
-var GITHUB_USERNAME = process.env.GITHUB_USERNAME;
-var GITHUB_PASSWORD = process.env.GITHUB_PASSWORD;
-
 var GITHUB_REPO = 'mozilla/teach.webmaker.org';
-var USER_AGENT = 'learning-issue-migrator on behalf of ' +
-                 'GitHub user ' + GITHUB_USERNAME;
 
 function getAllCachedIssues() {
   return fs.readdirSync(CACHE_DIR)
@@ -42,11 +37,8 @@ function cacheIssues(since) {
   }
 
   return new PagedEntityStream({
-    userAgent: USER_AGENT,
     url: 'https://api.github.com/repos/' + GITHUB_REPO + '/issues?' +
-         querystring.stringify(qs),
-    user: GITHUB_USERNAME,
-    pass: GITHUB_PASSWORD
+         querystring.stringify(qs)
   }).pipe(through(function ignoreIssueIfAlreadyCached(issue) {
     var queue = true;
     var filename = issueFilename(issue);
@@ -76,11 +68,8 @@ function cacheIssues(since) {
     }
 
     var comments = new PagedEntityStream({
-      userAgent: USER_AGENT,
       url: 'https://api.github.com/repos/' + GITHUB_REPO +
-           '/issues/' + issue.number + '/comments',
-      user: GITHUB_USERNAME,
-      pass: GITHUB_PASSWORD
+           '/issues/' + issue.number + '/comments'
     }).on('data', function(comment) {
       allComments.push(comment);
     }).on('end', function() {

@@ -59,7 +59,7 @@ function help(exitcode) {
   console.log("usage: " + path.basename(process.argv[1]) + ' [report]');
   console.log("\nreports:\n");
   Object.keys(reports).forEach(function(name) {
-    console.log('  ' + name, '-', reports[name].help);
+    console.log('  ' + chalk.white.bold(name), '-', reports[name].help);
   });
   process.exit(exitcode || 0);
 }
@@ -70,6 +70,10 @@ function main() {
 
   if (['-h', '--help'].indexOf(arg) != -1) return help();
   if (!report) return help(1);
+
+  console.log("Running report: " + chalk.white.bold(arg) + ". " +
+              "Output follows.\n");
+
   report.run();
 }
 

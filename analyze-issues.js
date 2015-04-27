@@ -33,7 +33,9 @@ function findLinkedIssues(issue) {
 }
 
 function isPlatformIssue(issue) {
-  return !!_.findWhere(issue.labels, {name: "platform"});
+  var hasPlatformLabel = !!_.findWhere(issue.labels, {name: "platform"});
+
+  return hasPlatformLabel || 'pull_request' in issue;
 }
 
 function isNonPlatformIssue(issue) {

@@ -15,11 +15,6 @@ var GITHUB_REPO = 'mozilla/teach.webmaker.org';
 var USER_AGENT = 'learning-issue-migrator on behalf of ' +
                  'GitHub user ' + GITHUB_USERNAME;
 
-function loadIssue(filename) {
-  var abspath = path.join(CACHE_DIR, filename);
-  return JSON.parse(fs.readFileSync(abspath));
-}
-
 function getAllCachedIssues() {
   return fs.readdirSync(CACHE_DIR)
     .sort()
@@ -105,7 +100,13 @@ function issueFilename(issue) {
   return path.join(CACHE_DIR, zpad(issue.number, ZPAD_AMOUNT) + '.json');
 }
 
+function getCachedIssue(number) {
+  return JSON.parse(fs.readFileSync(issueFilename({number: number})));
+}
+
 module.exports.getAllCachedIssues = getAllCachedIssues;
+module.exports.getCachedIssue = getCachedIssue;
+module.exports.GITHUB_REPO = GITHUB_REPO;
 
 if (!fs.existsSync(CACHE_DIR)) {
   fs.mkdirSync(CACHE_DIR);

@@ -50,6 +50,11 @@ function isNonPlatformIssue(issue) {
   return !isPlatformIssue(issue);
 }
 
+function issueDesc(issue) {
+  return chalk.white.bold('#' + issue.number) + ' ' +
+         chalk.gray('(' + issue.title + ')');
+}
+
 function help(exitcode) {
   console.log("usage: " + path.basename(process.argv[1]) + ' [command]');
   console.log("\ncommands:\n");
@@ -77,13 +82,34 @@ commands['linked'] = {
         var linkedIssues = findLinkedIssues(issue);
 
         if (linkedIssues.length) {
-          console.log(chalk.white.bold('#' + issue.number),
-                      chalk.gray('(' + issue.title + ')'),
+          console.log(issueDesc(issue),
                       "links to issue(s)",
                       linkedIssues.map(function(i) {
                         return chalk.cyan(i);
                       }).join(', ') + ".");
         }
+      });
+  }
+};
+
+commands['platform'] = {
+  help: 'show all platform issues',
+  run: function() {
+    cacheIssues.getAllCachedIssues()
+      .filter(isPlatformIssue)
+      .forEach(function(issue) {
+        console.log(issueDesc(issue));
+      });
+  }
+};
+
+commands['non-platform'] = {
+  help: 'show all non-platform issues',
+  run: function() {
+    cacheIssues.getAllCachedIssues()
+      .filter(isNonPlatformIssue)
+      .forEach(function(issue) {
+        console.log(issueDesc(issue));
       });
   }
 };

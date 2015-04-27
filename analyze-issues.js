@@ -1,9 +1,7 @@
-var fs = require('fs');
-var path = require('path');
 var _ =  require('underscore');
 var chalk = require('chalk');
 
-var CACHE_DIR = path.join(__dirname, 'cache');
+var cacheIssues = require('./cache-issues');
 
 function scanIssue(issue, regex) {
   var matches = [];
@@ -42,14 +40,7 @@ function isNonPlatformIssue(issue) {
   return !isPlatformIssue(issue);
 }
 
-function loadIssue(filename) {
-  var abspath = path.join(CACHE_DIR, filename);
-  return JSON.parse(fs.readFileSync(abspath));
-}
-
-fs.readdirSync(CACHE_DIR)
-  .sort()
-  .map(loadIssue)
+cacheIssues.getAllCachedIssues()
   .filter(isNonPlatformIssue)
   .forEach(function(issue) {
     var linkedIssues = findLinkedIssues(issue);

@@ -13,6 +13,20 @@ var GITHUB_REPO = 'mozilla/teach.webmaker.org';
 var USER_AGENT = 'learning-issue-migrator on behalf of ' +
                  'GitHub user ' + GITHUB_USERNAME;
 
+function loadIssue(filename) {
+  var abspath = path.join(CACHE_DIR, filename);
+  return JSON.parse(fs.readFileSync(abspath));
+}
+
+function getAllCachedIssues() {
+  return fs.readdirSync(CACHE_DIR)
+    .sort()
+    .map(function(filename) {
+      var abspath = path.join(CACHE_DIR, filename);
+      return JSON.parse(fs.readFileSync(abspath));
+    });
+}
+
 function cacheIssues() {
   return new PagedEntityStream({
     userAgent: USER_AGENT,
@@ -71,6 +85,8 @@ function issueFilename(issue) {
   var ZPAD_AMOUNT = 3;
   return path.join(CACHE_DIR, zpad(issue.number, ZPAD_AMOUNT) + '.json');
 }
+
+module.exports.getAllCachedIssues = getAllCachedIssues;
 
 if (!fs.existsSync(CACHE_DIR)) {
   fs.mkdirSync(CACHE_DIR);

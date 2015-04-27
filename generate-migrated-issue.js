@@ -7,11 +7,19 @@ var bodyUtil = require('./body-util');
 var template = _.template(fs.readFileSync(__dirname + '/issue-template.md',
                                           'utf-8'));
 
-function generate(issue) {
+function generate(issue, milestoneMap) {
   var newIssue = {
     title: issue.title,
     labels: _.pluck(issue.labels, 'name')
   };
+  var destMilestone;
+
+  if (milestoneMap && issue.milestone) {
+    destMilestone = milestoneMap.milestoneFor(issue.milestone.title);
+    if (!destMilestone)
+      throw new Error("Nonexistent milestone: " + issue.milestone.title);
+    newIssue.milestone = destMilestone.number;
+  }
 
   if (issue.assignee) {
     newIssue.assignee = issue.assignee.login;

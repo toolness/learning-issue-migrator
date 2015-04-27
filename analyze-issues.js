@@ -4,6 +4,7 @@ var chalk = require('chalk');
 
 var cacheIssues = require('./cache-issues');
 var bodyUtil = require('./body-util');
+var issueDesc = require('./chalk-util').issueDesc;
 
 var reports = {};
 
@@ -20,11 +21,6 @@ function isPlatformIssue(issue) {
 
 function isNonPlatformIssue(issue) {
   return !isPlatformIssue(issue);
-}
-
-function issueDesc(issue) {
-  return chalk.white.bold('#' + issue.number) + ' ' +
-         chalk.gray('(' + issue.title + ')');
 }
 
 function help(exitcode) {

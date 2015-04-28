@@ -41,7 +41,8 @@ function createIssue(newIssue, dest, cb) {
 
 function linkToMigration(src, srcIssue, destIssue, cb) {
   var body = [
-    "## This issue has been moved to " + destIssue.html_url,
+    '<a href="' + destIssue.html_url + '"><img src="https://raw.githubusercontent.com/toolness/learning-issue-migrator/master/img/migrated.png"></a>',
+    "This issue has been moved to " + destIssue.html_url + ".",
     "Please don't comment on it here."
   ].join('\n');
   githubRequest({
@@ -63,6 +64,48 @@ function linkToMigration(src, srcIssue, destIssue, cb) {
   });
 }
 
+function migrateIssue(options, cb) {
+  var rl = options.readline;
+  var src = options.src;
+  var dest = options.dest;
+  var map = options.milestoneMap;
+  var issue = options.issue;
+  var newIssue = generateMigratedIssue(issue, map);
+
+  console.log("Ready to migrate issue " + chalkUtil.issueDesc(issue) +
+              ".");
+  rl.question("Press enter to migrate or CTRL-C to abort.", function() {
+    rl.close();
+
+    console.log("Creating new issue in " + chalk.cyan(dest) + "...");
+    createIssue(newIssue, dest, function(err, createdIssue) {
+      if (err) return cb(err);
+
+      console.log("Created " + chalkUtil.issueDesc(createdIssue) + ".");
+
+      editIssue(createdIssue.number, {
+        state: issue.state
+      }, dest, function(err, createdIssue) {
+        if (err) return cb(err);
+        console.log("Updated state for new " +
+                    chalkUtil.issueDesc(createdIssue) + ".");
+        linkToMigration(src, issue, createdIssue, function(err) {
+          if (err) return cb(err);
+          console.log("Linked to new issue from old issue.");
+          editIssue(issue.number, {
+            state: 'closed'
+          }, src, function(err, issue) {
+            if (err) return cb(err);
+            console.log("Closed old " +
+                        chalkUtil.issueDesc(issue) + ".");
+            cb(null, createdIssue);
+          });
+        });
+      });
+    });
+  });
+}
+
 function main() {
   var rl = readline.createInterface({
     input: process.stdin,
@@ -77,42 +120,21 @@ function main() {
     milestones.createMilestoneMap(src, dest, function(err, map) {
       if (err) throw err;
 
-      var newIssue = generateMigratedIssue(issue, map);
-
-      console.log("Ready to migrate issue " + chalkUtil.issueDesc(issue) +
-                  ".");
-      rl.question("Press enter to migrate or CTRL-C to abort.", function() {
-        rl.close();
-
-        console.log("Creating new issue in " + chalk.cyan(dest) + "...");
-        createIssue(newIssue, dest, function(err, createdIssue) {
-          if (err) throw err;
-
-          console.log("Created " + chalkUtil.issueDesc(createdIssue) + ".");
-
-          editIssue(createdIssue.number, {
-            state: issue.state
-          }, dest, function(err, createdIssue) {
-            if (err) throw err;
-            console.log("Updated state for new " +
-                        chalkUtil.issueDesc(createdIssue) + ".");
-            linkToMigration(src, issue, createdIssue, function(err) {
-              if (err) throw err;
-              console.log("Linked to new issue from old issue.");
-              editIssue(issue.number, {
-                state: 'closed'
-              }, src, function(err, issue) {
-                if (err) throw err;
-                console.log("Closed old " +
-                            chalkUtil.issueDesc(issue) + ".");
-              });
-            });
-          });
-        });
+      migrateIssue({
+        readline: rl,
+        src: src,
+        dest: dest,
+        milestoneMap: map,
+        issue: issue
+      }, function(err) {
+        if (err) throw err;
+        console.log("Done migrating issue.");
       });
     });
   });
 }
+
+module.exports = migrateIssue;
 
 if (!module.parent) {
   main();

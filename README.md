@@ -1,7 +1,7 @@
 <img src="https://raw.githubusercontent.com/toolness/learning-issue-migrator/master/img/migration.png">
 
 This is an attempt at implementing a solution for 
-[the great learning issue migration][migration].
+[The Great Learning Issue Migration][migration].
 
 ## Environment Variables
 

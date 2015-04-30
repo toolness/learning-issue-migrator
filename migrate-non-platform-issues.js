@@ -55,6 +55,9 @@ function migrateIssues() {
         });
       });
 
+    console.log("There are " + migrations.length +
+                " issue(s) left to migrate.");
+
     async.series(migrations, function(err) {
       if (err) throw err;
       console.log("Migrations complete.");

@@ -1,7 +1,8 @@
 <img src="https://raw.githubusercontent.com/toolness/learning-issue-migrator/master/img/migration.png">
 
 This is an attempt at implementing a solution for 
-[The Great Learning Issue Migration][migration].
+[The Great Learning Issue Migration][migration]. Here's what it looks
+like when it's running:
 
 <img src="https://raw.githubusercontent.com/toolness/learning-issue-migrator/master/img/screenshot.jpg">
 

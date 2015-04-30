@@ -31,6 +31,9 @@ function getLatestUpdate() {
 function cacheIssues(since) {
   var qs = {'state': 'all'};
 
+  if (typeof(since) == 'undefined') {
+    since = getLatestUpdate();
+  }
   if (since) {
     qs.since = new Date(since).toISOString();
     console.log("Fetching only issues updated since " + qs.since + ".");
@@ -93,6 +96,7 @@ function getCachedIssue(number) {
   return JSON.parse(fs.readFileSync(issueFilename({number: number})));
 }
 
+module.exports.createCacheIssueStream = cacheIssues;
 module.exports.getAllCachedIssues = getAllCachedIssues;
 module.exports.getCachedIssue = getCachedIssue;
 module.exports.GITHUB_REPO = GITHUB_REPO;

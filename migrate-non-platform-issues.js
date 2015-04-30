@@ -32,7 +32,7 @@ function isNotMigrated(issue) {
   return !isMigrated;
 }
 
-function main() {
+function migrateIssues() {
   var src = cacheIssues.GITHUB_REPO;
   var dest = migrate.GITHUB_DEST_REPO;
   var migrations;
@@ -60,6 +60,11 @@ function main() {
       console.log("Migrations complete.");
     });
   });
+}
+
+function main() {
+  console.log("Updating issue cache.");
+  cacheIssues.createCacheIssueStream().on('end', migrateIssues);
 }
 
 if (!module.parent) {

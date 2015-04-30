@@ -9,6 +9,8 @@ This is an attempt at implementing a solution for
 * `GITHUB_PASSWORD` is your GitHub password.
 * `GITHUB_DEST_REPO` is the destination repository to migrate issues
   to, e.g. `mozilla/mozilla-learning`.
+* `MIGRATION_DELAY_SECONDS` is the amount of seconds to wait before
+  migrating each issue (only valid when migrating multiple issues).
 
 ## Quick Start
 

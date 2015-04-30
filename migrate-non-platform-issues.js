@@ -9,7 +9,7 @@ var migrate = require('./migrate');
 var migrateIssue = require('./migrate-issue');
 var milestones = require('./milestones');
 
-var MIGRATION_DELAY_SECONDS = 5;
+var MIGRATION_DELAY_SECONDS = process.env.MIGRATION_DELAY_SECONDS || 5;
 
 var fakeReadline = {
   question: function(text, cb) {

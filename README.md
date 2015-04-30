@@ -3,6 +3,8 @@
 This is an attempt at implementing a solution for 
 [The Great Learning Issue Migration][migration].
 
+<img src="https://raw.githubusercontent.com/toolness/learning-issue-migrator/master/img/screenshot.jpg">
+
 ## Environment Variables
 
 * `GITHUB_USERNAME` is your GitHub username.
@@ -32,9 +34,7 @@ Running `node migrate-issue.js` will migrate an individual issue from
 the source repo to the destination repo.
 
 Running `node migrate-non-platform-issues.js` will migrate all
-non-platform issues that haven't yet been migrated. Make sure you
-re-run `node cache-issues.js` after this to properly mark
-migrated issues in the cache.
+non-platform issues that haven't yet been migrated.
 
 <!-- Links -->
 

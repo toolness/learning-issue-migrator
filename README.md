@@ -11,6 +11,7 @@ This is an attempt at implementing a solution for
   to, e.g. `mozilla/mozilla-learning`.
 * `MIGRATION_DELAY_SECONDS` is the amount of seconds to wait before
   migrating each issue (only valid when migrating multiple issues).
+  Defaults to 5. Required to avoid [abuse rate limits][abuse].
 
 ## Quick Start
 
@@ -38,3 +39,4 @@ migrated issues in the cache.
 <!-- Links -->
 
   [migration]: https://github.com/mozilla/teach.webmaker.org/issues/807
+  [abuse]: https://developer.github.com/v3/#abuse-rate-limits

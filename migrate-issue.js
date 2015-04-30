@@ -93,7 +93,8 @@ function migrateIssue(options, cb) {
           if (err) return cb(err);
           console.log("Linked to new issue from old issue.");
           editIssue(issue.number, {
-            state: 'closed'
+            state: 'closed',
+            title: '[MIGRATED] ' + issue.title
           }, src, function(err, issue) {
             if (err) return cb(err);
             console.log("Closed old " +

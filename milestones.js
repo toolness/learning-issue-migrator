@@ -10,7 +10,8 @@ var migrate = require('./migrate');
 function fetchMilestones(repo, cb) {
   var milestones = [];
   var stream = new PagedEntityStream({
-    url: 'https://api.github.com/repos/' + repo + '/milestones'
+    url: 'https://api.github.com/repos/' + repo + '/milestones' +
+         '?state=all'
   }).on('data', function(milestone) {
     milestones.push(milestone);
   }).on('error', function(err) {

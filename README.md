@@ -28,6 +28,11 @@ milestones in the destination repo.
 Running `node migrate-issue.js` will migrate an individual issue from
 the source repo to the destination repo.
 
+Running `node migrate-non-platform-issues.js` will migrate all
+non-platform issues that haven't yet been migrated. Make sure you
+re-run `node cache-issues.js` after this to properly mark
+migrated issues in the cache.
+
 <!-- Links -->
 
   [migration]: https://github.com/mozilla/teach.webmaker.org/issues/807

@@ -86,6 +86,9 @@ reports['non-platform'] = {
   }
 };
 
+exports.isPlatformIssue = isPlatformIssue;
+exports.isNonPlatformIssue = isNonPlatformIssue;
+
 if (!module.parent) {
   main();
 }

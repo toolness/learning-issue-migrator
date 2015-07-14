@@ -8,7 +8,7 @@ var zpad = require('zpad');
 var PagedEntityStream = require('./paged-entity-stream');
 
 var CACHE_DIR = path.join(__dirname, 'cache');
-var GITHUB_REPO = 'mozilla/teach.webmaker.org';
+var GITHUB_REPO = 'mozilla/webmaker-android';
 
 function getAllCachedIssues() {
   return fs.readdirSync(CACHE_DIR)
@@ -29,7 +29,7 @@ function getLatestUpdate() {
 }
 
 function cacheIssues(since) {
-  var qs = {'state': 'all'};
+  var qs = {'state': 'open'};
 
   if (typeof(since) == 'undefined') {
     since = getLatestUpdate();

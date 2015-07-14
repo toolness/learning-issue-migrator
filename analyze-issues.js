@@ -20,7 +20,7 @@ function isPlatformIssue(issue) {
 }
 
 function isNonPlatformIssue(issue) {
-  return !isPlatformIssue(issue);
+  return true;
 }
 
 function help(exitcode) {
